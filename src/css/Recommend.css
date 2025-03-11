@@ -1,0 +1,123 @@
+/* Global Styles */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #141414;
+    /* Dark background for Netflix-like theme */
+    color: white;
+    margin: 0;
+    padding: 0;
+}
+
+h1 {
+    color: #fff;
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+}
+
+/* Movie Recommender Container */
+.movie-recommender {
+    text-align: center;
+    padding: 40px;
+    min-height: 100vh;
+    background-color: #141414;
+}
+
+.input {
+    padding: 12px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    width: 300px;
+    font-size: 1rem;
+    background-color: #333;
+    color: #fff;
+}
+
+.button {
+    padding: 12px 24px;
+    background-color: #e50914;
+    /* Netflix red */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.button:hover {
+    background-color: #b81d2e;
+    /* Darker red for hover effect */
+}
+
+.error {
+    color: red;
+    margin-top: 10px;
+    font-size: 1.2rem;
+}
+
+/* Recommendations Grid */
+.recommendations-list {
+    margin-top: 40px;
+}
+
+.recommendations-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    /* Responsive grid */
+    gap: 20px;
+    padding: 0;
+    list-style-type: none;
+}
+
+.recommendation-item {
+    background-color: #333;
+    border-radius: 10px;
+    padding: 20px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.recommendation-item:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6);
+}
+
+/* Movie Poster */
+.movie-poster {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    margin-bottom: 15px;
+}
+
+/* Movie Info Section */
+.movie-info {
+    text-align: left;
+}
+
+.movie-info h3 {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+}
+
+.movie-overview {
+    font-size: 1rem;
+    color: #bbb;
+    line-height: 1.5;
+    max-height: 50px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+@media (max-width: 768px) {
+    .movie-recommender {
+        padding: 20px;
+    }
+
+    .input {
+        width: 250px;
+    }
+}
