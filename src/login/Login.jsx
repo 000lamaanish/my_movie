@@ -1,41 +1,88 @@
-import React, { useState } from 'react';
-import '../css/login.css'; // Make sure the CSS file is correctly linked
+import React from "react";
+import { useForm } from "react-hook-form";
+import '../component/Login.css'
+const RegisterForm = () => {
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+    } = useForm();
 
-const Login = () => {
-    const [formType, setFormType] = useState("Sign In");
+    const onSubmit = (data) => {
+        console.log("Form Submitted:", data);
+    };
 
     return (
-        <div className="login-container">
-            <div className="login-card">
-                <h1>{formType}</h1>
-                <form className="login-form">
-                    {formType === "Sign Up" && (
-                        <input type="text" placeholder="Your Name" className="input-field" />
-                    )}
-                    <input type="email" placeholder="Email" className="input-field" />
-                    <input type="password" placeholder="Password" className="input-field" />
-
-                    <button type="submit" className="submit-btn">{formType}</button>
-
-                    <div className="extra-options">
-                        <label className="remember-me">
-                            <input type="checkbox" /> Remember Me
+        <div className="form-container">
+            <div className="form-card">
+                <h2>Registration Form</h2>
+                <form onSubmit={handleSubmit(onSubmit)} className="login-form">
+                    {/* Username Field */}
+                    <div className="form-field">
+                        <label htmlFor="username" className="form-label">
+                            Username
                         </label>
-                        <p className="help-text">Need help?</p>
+                        <input
+                            id="username"
+                            type="text"
+                            {...register("username", { required: "Username is required" })}
+                            className={`form-input ${errors.username ? "error" : ""}`}
+                        />
+                        {errors.username && (
+                            <p className="form-error">{errors.username.message}</p>
+                        )}
                     </div>
 
-                    <p className="toggle-text">
-                        {formType === "Sign In"
-                            ? "New to our website? "
-                            : "Already have an account? "}
-                        <span onClick={() => setFormType(formType === "Sign In" ? "Sign Up" : "Sign In")}>
-                            {formType === "Sign In" ? "Sign Up" : "Sign In"}
-                        </span>
-                    </p>
+                    {/* Email Field */}
+                    <div className="form-field">
+                        <label htmlFor="email" className="form-label">
+                            Email
+                        </label>
+                        <input
+                            id="email"
+                            type="email"
+                            {...register("email", {
+                                required: "Email is required",
+                                pattern: {
+                                    value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                                    message: "Invalid email format",
+                                },
+                            })}
+                            className={`form-input ${errors.email ? "error" : ""}`}
+                        />
+                        {errors.email && <p className="form-error">{errors.email.message}</p>}
+                    </div>
+
+                    {/* Password Field */}
+                    <div className="form-field">
+                        <label htmlFor="password" className="form-label">
+                            Password
+                        </label>
+                        <input
+                            id="password"
+                            type="password"
+                            {...register("password", {
+                                required: "Password is required",
+                                minLength: {
+                                    value: 6,
+                                    message: "Password must be at least 6 characters",
+                                },
+                            })}
+                            className={`form-input ${errors.password ? "error" : ""}`}
+                        />
+                        {errors.password && (
+                            <p className="form-error">{errors.password.message}</p>
+                        )}
+                    </div>
+
+                    {/* Submit Button */}
+                    <button type="submit" className="submit-btn">
+                        Submit
+                    </button>
                 </form>
             </div>
         </div>
     );
 };
 
-export default Login;
+export default RegisterForm;
