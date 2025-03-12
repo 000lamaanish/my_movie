@@ -1,11 +1,6 @@
 const API_KEY = "b0f44254786d6ba00216937a2260e18f"
 const BASE_URL = "https://api.themoviedb.org/3"
 
-// export const Getpopularmovie = async () => {
-//     const response = await fetch(`${base_url}/movie/popular?api_key=${api_key}`);
-//     const data = await response.json();
-//     return data.result;
-// };
 export async function Getpopularmovie() {
     try {
         const response = await fetch(`${BASE_URL}/movie/popular?api_key=${API_KEY}`);
@@ -13,11 +8,11 @@ export async function Getpopularmovie() {
         if (!response.ok) throw new Error("Failed to fetch movies");
 
         const data = await response.json();
-        console.log("Fetched Movies:", data.results); // ✅ Check API response in Console
-        return data.results || []; // ✅ Always return an array
+        console.log("Fetched Movies:", data.results); 
+        return data.results || []; 
     } catch (error) {
         console.error("Error fetching movies:", error);
-        return []; // ✅ Return empty array to prevent errors
+        return []; 
     }
 }
 
@@ -33,7 +28,7 @@ export const searchMovies = async (query) => {
         }
 
         const data = await response.json();
-        return data.results || []; // Ensure we return an array
+        return data.results || []; 
     } catch (error) {
         console.error("Failed to fetch movies:", error);
         return [];
