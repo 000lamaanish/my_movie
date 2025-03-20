@@ -1,88 +1,95 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
+import axios from 'axios';
 import '../css/Recommend.css'
 
-export default function MovieRecommender() {
-    const [movieName, setMovieName] = useState("");
+const TMDB_API_KEY = "b0f44254786d6ba00216937a2260e18f";
+const BASE_URL = "https://api.themoviedb.org/3"
+
+
+function MovieRecommendations() {
+    const [movie, setMovie] = useState('');
     const [recommendations, setRecommendations] = useState([]);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
+    const [error, setError] = useState('');
 
-    const apiKey = "b0f44254786d6ba00216937a2260e18f";
-
-    const getRecommendations = async () => {
-        if (!movieName) return;
-
-        setLoading(true);
-        setError(null);
-
-        try {
-            // Step 1: Search for the movie by name to get its ID
-            const searchResponse = await fetch(
-                `https://api.themoviedb.org/3/search/movie?api_key=${apiKey}&query=${movieName}&language=en-US&page=1`
-            );
-            const searchData = await searchResponse.json();
-
-            if (searchData.results.length === 0) {
-                setError("Movie not found.");
-                setLoading(false);
-                return;
-            }
-
-            const movieId = searchData.results[0].id; // Get the first movie from the search result
-
-            // Step 2: Fetch recommendations using the movie ID
-            const recommendationsResponse = await fetch(
-                `https://api.themoviedb.org/3/movie/${movieId}/recommendations?api_key=${apiKey}&language=en-US&page=1`
-            );
-            const recommendationsData = await recommendationsResponse.json();
-
-            if (recommendationsData.results && recommendationsData.results.length > 0) {
-                setRecommendations(recommendationsData.results);
-            } else {
-                setError("No recommendations found.");
-            }
-        } catch (err) {
-            setError("Error fetching recommendations: " + err.message);
+    const fetchRecommendations = async () => {
+        if (!movie) {
+            setError('Please enter a movie name');
+            return;
         }
 
-        setLoading(false);
+        try {
+            // Fetch recommendations from Flask API
+            const response = await axios.get(`http://127.0.0.1:5000/recommend`, {
+                params: { movie },
+            });
+
+            if (response.data.error) {
+                setError(response.data.error);
+                setRecommendations([]);
+            } else {
+                setError('');
+                fetchMoviePosters(response.data.recommended_movies);
+            }
+        } catch (err) {
+            setError('Failed to fetch data. Make sure the Flask server is running.');
+        }
+    };
+
+    const fetchMoviePosters = async (movies) => {
+        const movieData = await Promise.all(
+            movies.map(async (movieTitle) => {
+                try {
+                    const tmdbResponse = await axios.get(
+                        `https://api.themoviedb.org/3/search/movie`,
+                        {
+                            params: {
+                                api_key: TMDB_API_KEY,
+                                query: movieTitle,
+                            },
+                        }
+                    );
+
+                    const movieDetails = tmdbResponse.data.results[0]; // Get the first result
+                    return {
+                        title: movieTitle,
+                        poster: movieDetails?.poster_path
+                            ? `https://image.tmdb.org/t/p/w500${movieDetails.poster_path}`
+                            : "https://via.placeholder.com/500x750?text=No+Image",
+                    };
+                } catch (error) {
+                    return { title: movieTitle, poster: 'https://via.placeholder.com/500x750?text=No+Image' };
+                }
+            })
+        );
+
+        setRecommendations(movieData);
     };
 
     return (
-        <div className="movie-recommender" style={{ display: "flex", justifyContent: "center", alignItems: "center", flexDirection: "column" }}>
-            <h1></h1>
+        <div className="container">
+            <h1 className='h1'> Movie Recommendation </h1>
             <input
+                className='input'
                 type="text"
+                value={movie}
+                onChange={(e) => setMovie(e.target.value)}
                 placeholder="Enter a movie name..."
-                value={movieName}
-                onChange={(e) => setMovieName(e.target.value)}
-                className="input"
             />
-            <button onClick={getRecommendations} disabled={loading} className="button">
-                {loading ? "Loading..." : "Get Recommendations"}
-            </button>
+            <button className='btns' onClick={fetchRecommendations}>Get Recommendations</button>
 
-            {error && <div className="error">{error}</div>}
+            {error && <p className="error">{error}</p>}
 
-            <div className="recommendations-list">
-                {recommendations.length > 0 && (
-                    <ul className="recommendations-grid">
-                        {recommendations.map((movie) => (
-                            <li key={movie.id} className="recommendation-item">
-                                <img
-                                    src={`https://image.tmdb.org/t/p/w200${movie.poster_path}`}
-                                    alt={movie.title}
-                                    className="movie-poster"
-                                />
-                                <div className="movie-info">
-                                    <h3>{movie.title}</h3>
-                                    <p className="movie-overview">{movie.overview.slice(0, 100)}...</p>
-                                </div>
-                            </li>
-                        ))}
-                    </ul>
-                )}
+            <div className="movie-grid">
+                {recommendations.map((rec, index) => (
+                    <>
+                        <div key={index} className="movie-card">
+                            <img src={rec.poster} alt={rec.title} />
+                            <p>{rec.title}</p>
+                        </div>
+                    </>
+                ))}
             </div>
         </div>
     );
 }
+export default MovieRecommendations;
