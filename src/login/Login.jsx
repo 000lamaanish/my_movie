@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import '../css/Login.css'
 const RegisterForm = () => {
-    const [isRegister, setisRegister] = useState()
+    const [isRegister, setIsRegister] = useState()
     const {
         register,
         handleSubmit,
@@ -10,29 +10,33 @@ const RegisterForm = () => {
     } = useForm();
 
     const onSubmit = (data) => {
-        console.log("Form Submitted:", data);
+        console.log(`${isRegister ? "Registration" : "Login"} Form Submitted:`, data);
     };
 
     return (
         <div className="form-container">
             <div className="form-card">
                 <h2>Registration Form</h2>
+                <h2>{isRegister ? "Registration" : "Login"} Form</h2>
                 <form onSubmit={handleSubmit(onSubmit)} className="login-form">
-                    {/* Username Field */}
-                    <div className="form-field">
-                        <label htmlFor="username" className="form-label">
-                            Username
-                        </label>
-                        <input
-                            id="username"
-                            type="text"
-                            {...register("username", { required: "Username is required" })}
-                            className={`form-input ${errors.username ? "error" : ""}`}
-                        />
-                        {errors.username && (
-                            <p className="form-error">{errors.username.message}</p>
-                        )}
-                    </div>
+                    {/* Username Field {only for the registration form} */}
+                    {isRegister && (
+                        <div className="form-field">
+                            <label htmlFor="username" className="form-label">
+                                Username
+                            </label>
+                            <input
+                                id="username"
+                                type="text"
+                                {...register("username", { required: "Username is required" })}
+                                className={`form-input ${errors.username ? "error" : ""}`}
+                            />
+                            {errors.username && (
+                                <p className="form-error">{errors.username.message}</p>
+                            )}
+                        </div>
+
+                    )}
 
                     {/* Email Field */}
                     <div className="form-field">
@@ -78,7 +82,12 @@ const RegisterForm = () => {
 
                     {/* Submit Button */}
                     <button type="submit" className="submit-btn">
-                        Submit
+                        {isRegister ? "Register" : "Login"}
+                    </button>
+
+                    {/* Toggle Button */}
+                    <button onClick={() => setIsRegister(!isRegister)} className="toggle-btn">
+                        {isRegister ? "Switch to Login" : "Switch to Register"}
                     </button>
                 </form>
             </div>
