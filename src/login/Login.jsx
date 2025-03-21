@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import '../css/Login.css'
 const RegisterForm = () => {
+    const [isRegister, setisRegister] = useState()
     const {
         register,
         handleSubmit,
