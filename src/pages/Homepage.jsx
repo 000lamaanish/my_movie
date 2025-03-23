@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from "react";
 import Moviecard from "../component/Moviecard";
 import "../css/Home.css";
-import { searchMovies, Getpopularmovie } from "../component/Api";
+import { searchMovies, Getpopularmovie } from "../component/Api"
 import Navbar from "../component/Navbar";
 import Footer from "../component/Footer";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const Homepage = () => {
     const [search, setSearch] = useState("");
     const [movies, setMovies] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const LoadPopularMovies = async () => {
@@ -64,12 +66,22 @@ const Homepage = () => {
                 {error && <p className="error">{error}</p>}
                 <div className="rec">
                     <div className="popular">
-                        <p>Popular Movies</p>
+                        <p>{search.trim() ? "Search Results" : "Popular Movies"}</p>
                     </div>
 
                     <div className="movies-grid">
                         {movies.length > 0 ? (
-                            movies.map((movie) => <Moviecard key={movie.id} movie={movie} />)
+                            movies.map((movie) => (
+                                <div
+                                    key={movie.id}
+                                    onClick={() => {
+                                        console.log("Navigating to:", `/movie/${movie.id}`);
+                                        navigate(`/movie/${movie.id}`);
+                                    }}
+                                >
+                                    <Moviecard movie={movie} />
+                                </div>
+                            ))
                         ) : (
                             !loading && <p>No movies found.</p>
                         )}
