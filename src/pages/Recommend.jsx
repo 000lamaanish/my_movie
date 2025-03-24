@@ -1,88 +1,95 @@
-import React, { useState } from "react";
-import '../css/Recommend.css'
+import React, { useState } from 'react';
+import axios from 'axios';
 
-export default function MovieRecommender() {
-    const [movieName, setMovieName] = useState("");
+const TMDB_API_KEY = "b0f44254786d6ba00216937a2260e18f";
+const BASE_URL = "https://api.themoviedb.org/3";
+
+function MovieRecommendations() {
+    const [movie, setMovie] = useState('');
     const [recommendations, setRecommendations] = useState([]);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
+    const [error, setError] = useState('');
 
-    const apiKey = "b0f44254786d6ba00216937a2260e18f";
-
-    const getRecommendations = async () => {
-        if (!movieName) return;
-
-        setLoading(true);
-        setError(null);
-
-        try {
-            // Step 1: Search for the movie by name to get its ID
-            const searchResponse = await fetch(
-                `https://api.themoviedb.org/3/search/movie?api_key=${apiKey}&query=${movieName}&language=en-US&page=1`
-            );
-            const searchData = await searchResponse.json();
-
-            if (searchData.results.length === 0) {
-                setError("Movie not found.");
-                setLoading(false);
-                return;
-            }
-
-            const movieId = searchData.results[0].id; // Get the first movie from the search result
-
-            // Step 2: Fetch recommendations using the movie ID
-            const recommendationsResponse = await fetch(
-                `https://api.themoviedb.org/3/movie/${movieId}/recommendations?api_key=${apiKey}&language=en-US&page=1`
-            );
-            const recommendationsData = await recommendationsResponse.json();
-
-            if (recommendationsData.results && recommendationsData.results.length > 0) {
-                setRecommendations(recommendationsData.results);
-            } else {
-                setError("No recommendations found.");
-            }
-        } catch (err) {
-            setError("Error fetching recommendations: " + err.message);
+    const fetchRecommendations = async () => {
+        if (!movie) {
+            setError('Please enter a movie name');
+            return;
         }
 
-        setLoading(false);
+        try {
+            const response = await axios.get(`http://127.0.0.1:5000/recommend`, {
+                params: { movie },
+            });
+
+            if (response.data.error) {
+                setError(response.data.error);
+                setRecommendations([]);
+            } else {
+                setError('');
+                fetchMoviePosters(response.data.recommended_movies);
+            }
+        } catch (err) {
+            setError('Failed to fetch data. Make sure the Flask server is running.');
+        }
+    };
+
+    const fetchMoviePosters = async (movies) => {
+        const movieData = await Promise.all(
+            movies.map(async (movieTitle) => {
+                try {
+                    const tmdbResponse = await axios.get(
+                        `${BASE_URL}/search/movie`,
+                        {
+                            params: {
+                                api_key: TMDB_API_KEY,
+                                query: movieTitle,
+                            },
+                        }
+                    );
+
+                    const movieDetails = tmdbResponse.data.results[0];
+                    return {
+                        title: movieTitle,
+                        poster: movieDetails?.poster_path
+                            ? `https://image.tmdb.org/t/p/w500${movieDetails.poster_path}`
+                            : "https://via.placeholder.com/500x750?text=No+Image",
+                    };
+                } catch (error) {
+                    return { title: movieTitle, poster: 'https://via.placeholder.com/500x750?text=No+Image' };
+                }
+            })
+        );
+        setRecommendations(movieData);
     };
 
     return (
-        <div className="movie-recommender" style={{ display: "flex", justifyContent: "center", alignItems: "center", flexDirection: "column" }}>
-            <h1></h1>
-            <input
-                type="text"
-                placeholder="Enter a movie name..."
-                value={movieName}
-                onChange={(e) => setMovieName(e.target.value)}
-                className="input"
-            />
-            <button onClick={getRecommendations} disabled={loading} className="button">
-                {loading ? "Loading..." : "Get Recommendations"}
-            </button>
-
-            {error && <div className="error">{error}</div>}
-
-            <div className="recommendations-list">
-                {recommendations.length > 0 && (
-                    <ul className="recommendations-grid">
-                        {recommendations.map((movie) => (
-                            <li key={movie.id} className="recommendation-item">
-                                <img
-                                    src={`https://image.tmdb.org/t/p/w200${movie.poster_path}`}
-                                    alt={movie.title}
-                                    className="movie-poster"
-                                />
-                                <div className="movie-info">
-                                    <h3>{movie.title}</h3>
-                                    <p className="movie-overview">{movie.overview.slice(0, 100)}...</p>
-                                </div>
-                            </li>
-                        ))}
-                    </ul>
-                )}
+        <div className="flex flex-col items-center p-6 bg-gray-900 min-h-screen text-white">
+            <h1 className='text-3xl font-bold mb-6'>Movie Recommendation</h1>
+            <div className="flex gap-2 w-full max-w-md">
+                <input
+                    className='w-full p-3 rounded-lg bg-gray-800 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500'
+                    type="text"
+                    value={movie}
+                    onChange={(e) => setMovie(e.target.value)}
+                    placeholder="Enter a movie name..."
+                />
+                <button
+                    className='px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg transition duration-300'
+                    onClick={fetchRecommendations}
+                >
+                    Get Recommendations
+                </button>
+            </div>
+            {error && <p className="mt-4 text-red-400">{error}</p>}
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6 mt-8">
+                {recommendations.map((rec, index) => (
+                    <div key={index} className="bg-gray-800 rounded-lg shadow-lg overflow-hidden text-center">
+                        <img className="w-full h-72 object-cover" src={rec.poster} alt={rec.title} />
+                        <p className="p-3 text-sm font-medium">{rec.title}</p>
+                    </div>
+                ))}
             </div>
         </div>
     );
 }
+
+export default MovieRecommendations;
