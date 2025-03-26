@@ -1,4 +1,4 @@
-* Registration Form Styling */ .form-container {
+.form-container {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -41,7 +41,7 @@ h2 {
 }
 
 .form-input {
-    width: 94%;
+    width: 100%;
     padding: 12px;
     margin: 8px 0;
     border: 1px solid #ccc;
@@ -81,4 +81,12 @@ h2 {
 
 .submit-btn:hover {
     background-color: #e84118;
+}
+
+.pointer-cursor {
+    cursor: pointer;
+    color: #007bff;
+    /* Optional: you can also add color to the text */
+    text-decoration: underline;
+    /* Optional: underline the clickable text */
 }

@@ -5,8 +5,11 @@ import {
     getCoreRowModel,
     flexRender,
 } from "@tanstack/react-table";
+const BASE_URL = import.meta.env.VITE_API_URL;
+const API_KEY = import.meta.env.VITE_API_KEY;
 
-const TMDB_API_KEY = "b0f44254786d6ba00216937a2260e18f";
+console.log('API URL:', BASE_URL);
+console.log('API Key:', API_KEY);
 
 const MovieStatsPage = () => {
     const [movies, setMovies] = useState([]);

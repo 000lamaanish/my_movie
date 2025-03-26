@@ -3,8 +3,9 @@ import "./css/App.css"
 import Homepage from './pages/Homepage'
 import Favourite from './pages/fav'
 import Login from './login/Login'
-import Recommend from './pages/recommend'
+import Recommend from './pages/Recommend'
 import Moviedetails from './component/Moviedetail'
+import MovieStatsPage from './pages/Moviestat'
 import { Routes, Route } from 'react-router-dom'
 const App = () => {
 
@@ -17,6 +18,7 @@ const App = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/recommend" element={<Recommend />} />
           <Route path="/movie/:id" element={<Moviedetails />} />
+          <Route path="/stats" element={<MovieStatsPage />} />
 
         </Routes>
       </main>
