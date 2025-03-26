@@ -2,11 +2,18 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
 
+const BASE_URL = import.meta.env.VITE_API_URL;
+const API_KEY = import.meta.env.VITE_API_KEY;
+
+console.log('API URL:', BASE_URL);
+console.log('API Key:', API_KEY);
+
 const MovieDetailPage = () => {
     const { id } = useParams();
     const [movieDetails, setMovieDetails] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [similarMovies, setSimilarMovies] = useState([]);
 
     useEffect(() => {
         if (!id) {
@@ -16,9 +23,7 @@ const MovieDetailPage = () => {
         }
 
         const fetchMovieDetails = async () => {
-            const apiKey = "b0f44254786d6ba00216937a2260e18f";
-            const apiUrl = `https://api.themoviedb.org/3/movie/${id}?api_key=${apiKey}`;
-
+            const apiUrl = `${BASE_URL}/movie/${id}?api_key=${API_KEY}`;
             try {
                 const response = await axios.get(apiUrl);
                 setMovieDetails(response.data);
@@ -31,6 +36,29 @@ const MovieDetailPage = () => {
 
         fetchMovieDetails();
     }, [id]);
+
+    useEffect(() => {
+        if (id) {
+            fetchSimilarMovies(id);
+        }
+    }, [id]);
+
+    const fetchSimilarMovies = async (movieId) => {
+        try {
+            const response = await axios.get(
+                `${BASE_URL}/movie/${movieId}/similar?api_key=${API_KEY}&language=en-US&page=1`
+            );
+            console.log("Similar Movies Response: ", response.data); // Debugging API response
+            if (response.data.results.length > 0) {
+                setSimilarMovies(response.data.results.slice(0, 5)); // Get top 5 similar movies
+            } else {
+                setSimilarMovies([]); // Set empty array if no similar movies are found
+            }
+        } catch (error) {
+            console.error("Error fetching similar movies:", error);
+            setError('Failed to fetch similar movies');
+        }
+    };
 
     if (loading) {
         return <div className="flex justify-center items-center h-screen text-white text-lg">Loading movie details...</div>;
@@ -58,6 +86,27 @@ const MovieDetailPage = () => {
                     <p className="text-lg"><strong>Rating:</strong> {movieDetails.vote_average} / 10</p>
                 </div>
             </div>
+
+            {/* Render similar movies only if we have data */}
+            {similarMovies.length > 0 ? (
+                <div>
+                    <h2 className="text-2xl font-bold mt-8 mb-4">Similar Movies</h2>
+                    <div style={{ display: "flex", gap: "10px", overflowX: "auto" }}>
+                        {similarMovies.map((movie) => (
+                            <div key={movie.id} style={{ textAlign: "center" }}>
+                                <img
+                                    src={`https://image.tmdb.org/t/p/w200${movie.poster_path}`}
+                                    alt={movie.title}
+                                    style={{ borderRadius: "8px" }}
+                                />
+                                <p>{movie.title}</p>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            ) : (
+                <div className="text-lg text-gray-400">No similar movies found.</div>
+            )}
         </div>
     );
 };
