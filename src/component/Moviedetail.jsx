@@ -48,11 +48,11 @@ const MovieDetailPage = () => {
             const response = await axios.get(
                 `${BASE_URL}/movie/${movieId}/similar?api_key=${API_KEY}&language=en-US&page=1`
             );
-            console.log("Similar Movies Response: ", response.data); // Debugging API response
+            console.log("Similar Movies Response: ", response.data);
             if (response.data.results.length > 0) {
                 setSimilarMovies(response.data.results.slice(0, 5)); // Get top 5 similar movies
             } else {
-                setSimilarMovies([]); // Set empty array if no similar movies are found
+                setSimilarMovies([]);
             }
         } catch (error) {
             console.error("Error fetching similar movies:", error);

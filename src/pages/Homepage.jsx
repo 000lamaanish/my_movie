@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Moviecard from "../component/Moviecard";
-import { searchMovies, Getpopularmovie } from "../api/Api";
+import { searchMovies, Getpopularmovie } from "../component/Api";
 import Navbar from "../component/Navbar";
 import Footer from "../component/Footer";
 import { Link, useNavigate } from "react-router-dom";
