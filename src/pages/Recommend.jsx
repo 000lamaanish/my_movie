@@ -4,6 +4,7 @@ import axios from 'axios';
 const TMDB_API_KEY = "b0f44254786d6ba00216937a2260e18f";
 const BASE_URL = "https://api.themoviedb.org/3";
 
+
 function MovieRecommendations() {
     const [movie, setMovie] = useState('');
     const [recommendations, setRecommendations] = useState([]);
@@ -16,6 +17,7 @@ function MovieRecommendations() {
         }
 
         try {
+
             const response = await axios.get(`http://127.0.0.1:5000/recommend`, {
                 params: { movie },
             });
@@ -86,10 +88,13 @@ function MovieRecommendations() {
                         <img className="w-full h-72 object-cover" src={rec.poster} alt={rec.title} />
                         <p className="p-3 text-sm font-medium">{rec.title}</p>
                     </div>
+
+  
                 ))}
             </div>
         </div>
     );
 }
+
 
 export default MovieRecommendations;

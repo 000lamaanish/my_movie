@@ -1,4 +1,6 @@
-* Registration Form Styling */ .form-container {
+
+/* Registration Form Styling */
+.form-container {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -81,4 +83,6 @@ h2 {
 
 .submit-btn:hover {
     background-color: #e84118;
+
 }
+
