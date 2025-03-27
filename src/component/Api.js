@@ -8,6 +8,7 @@ export async function Getpopularmovie() {
         if (!response.ok) throw new Error("Failed to fetch movies");
 
         const data = await response.json();
+
         console.log("Fetched Movies:", data.results); 
         return data.results || []; 
     } catch (error) {

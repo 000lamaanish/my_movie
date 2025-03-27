@@ -1,3 +1,4 @@
+
 /* Registration Form Styling */
 .form-container {
     display: flex;
@@ -82,4 +83,6 @@ h2 {
 
 .submit-btn:hover {
     background-color: #e84118;
+
 }
+
