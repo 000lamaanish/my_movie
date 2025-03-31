@@ -1,29 +1,20 @@
-import React from 'react'
+import React from "react";
 
-const Input = () => {
+const Input = ({ label, type, register, validation, error }) => {
     return (
-        <div>
-            <div>
-                <div className="form-field">
-                    <label htmlFor="username" className="form-label">
-                        Username
-                    </label>
-                    <input
-                        id="username"
-                        type="text"
-                        {...register("username", { required: "Username is required" })}
-                        className={`form-input ${errors.username ? "error" : ""}`}
-                    />
-                    {errors.username && (
-                        <p className="form-error">{errors.username.message}</p>
-                    )}
-                </div>
-            </div>
-
-
-
+        <div className="mb-4">
+            <label className="block text-gray-700 font-medium">{label}</label>
+            <input
+                type={type}
+                {...register(label.toLowerCase(), validation)}
+                className={`w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 
+                    ${error ? "border-red-500 focus:ring-red-500" : "border-gray-300 focus:ring-green-500"}
+                `}
+                placeholder={`Enter your ${label.toLowerCase()}`}
+            />
+            {error && <p className="text-red-500 text-sm mt-1">{error.message}</p>}
         </div>
-    )
-}
+    );
+};
 
-export default Input
+export default Input;
