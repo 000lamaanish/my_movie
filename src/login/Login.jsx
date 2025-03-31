@@ -1,11 +1,7 @@
-
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import axios from "axios";
-import Input from "../component/Input";
-import EmailInput from "../component/Email";
-import PasswordInput from "../component/PasswordInput";
-import '../css/Login.css';
+import Input from "../component/Input"; // Reusable Input Component
 
 const RegisterForm = () => {
     const [isRegister, setIsRegister] = useState(false);
@@ -29,7 +25,7 @@ const RegisterForm = () => {
             setLoading(false);
 
             if (response.data.access_token) {
-                localStorage.setItem('token', response.data.access_token);
+                localStorage.setItem("token", response.data.access_token);
                 alert("Success! Token: " + response.data.access_token);
             } else {
                 alert("Error: " + response.data.message);
@@ -42,23 +38,70 @@ const RegisterForm = () => {
     };
 
     return (
-        <div className="form-container">
-            <div className="form-card">
-                <h2>{isRegister ? "Registration" : "Login"} Form</h2>
-                <form onSubmit={handleSubmit(onSubmit)} className="login-form">
-                    {isRegister && <Input />}
-                    <EmailInput register={register} errors={errors} />
-                    <PasswordInput register={register} errors={errors} />
-                    <button type="submit" className="submit-btn">
-                        {isRegister ? "Register" : "Login"}
+        <div className="flex items-center justify-center min-h-screen bg-gray-100">
+            <div className="bg-white p-6 sm:p-8 rounded-lg shadow-lg w-full max-w-md">
+                <h2 className="text-2xl font-bold text-center text-green-600">
+                    {isRegister ? "Register" : "Login"}
+                </h2>
+
+                <form onSubmit={handleSubmit(onSubmit)} className="mt-6">
+                    {/* Show "Name" field only in Registration */}
+                    {isRegister && (
+                        <Input
+                            label="Name"
+                            type="text"
+                            register={register}
+                            validation={{ required: "Name is required" }}
+                            error={errors.name}
+                        />
+                    )}
+
+                    {/* Email Input */}
+                    <Input
+                        label="Email"
+                        type="email"
+                        register={register}
+                        validation={{
+                            required: "Email is required",
+                            pattern: {
+                                value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+                                message: "Invalid email format",
+                            },
+                        }}
+                        error={errors.email}
+                    />
+
+                    {/* Password Input */}
+                    <Input
+                        label="Password"
+                        type="password"
+                        register={register}
+                        validation={{
+                            required: "Password is required",
+                            minLength: {
+                                value: 6,
+                                message: "Password must be at least 6 characters",
+                            },
+                        }}
+                        error={errors.password}
+                    />
+
+                    <button
+                        type="submit"
+                        className="w-full mt-4 bg-green-500 text-white py-2 rounded-lg shadow-md hover:bg-green-600 transition"
+                    >
+                        {loading ? "Processing..." : isRegister ? "Register" : "Login"}
                     </button>
-                    <p className="toggle-text">
+
+                    <p className="text-center text-sm text-gray-600 mt-4">
                         {isRegister ? "Already have an account? " : "New to our website? "}
-                        <span onClick={() => setIsRegister(!isRegister)} className="pointer-cursor">
+                        <span
+                            onClick={() => setIsRegister(!isRegister)}
+                            className="text-green-500 font-semibold cursor-pointer hover:underline"
+                        >
                             {isRegister ? "Switch to Login" : "Switch to Register"}
                         </span>
                     </p>
-
                 </form>
             </div>
         </div>
